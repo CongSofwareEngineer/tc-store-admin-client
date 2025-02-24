@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://tcstore.vercel.app/
+
+# Sitemaps
+Sitemap: https://tcstore.vercel.app/sitemap.xml
