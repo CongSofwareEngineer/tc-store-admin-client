@@ -1,8 +1,8 @@
-import { REQUEST_TYPE } from '@/constants/app'
+import { REQUEST_TYPE } from '@/constant/app'
 import { ClientAPITypeParam, fetchData } from '@/configs/fetchConfig'
-import { BodyAddBill } from '@/constants/firebase'
+import { BodyAddBill } from '@/constant/firebase'
 import { encryptData } from '@/utils/crypto'
-import { PATH_IMG } from '@/constants/mongoDB'
+import { PATH_IMG } from '@/constant/mongoDB'
 
 const ClientApi = {
   pingServer: async () => {

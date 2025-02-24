@@ -20,7 +20,7 @@ const MyImage = (props: any) => {
       }}
       style={{
         filter: loaded ? 'none' : 'blur(20px)',
-        transition: 'filter 0.1s ease-out',
+        transition: 'filter 0.2s ease-out',
         ...props.style,
       }}
       src={

@@ -1,5 +1,5 @@
 'use client'
-import { AiOutlineLoading3Quarters } from 'react-icons/ai'
+import { Loading3QuartersOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
 
 const LoadingFirstPage = () => {
@@ -11,7 +11,7 @@ const LoadingFirstPage = () => {
     <></>
   ) : (
     <div className='bg-white z-[999999999] flex w-screen h-screen fixed justify-center items-center inset-0'>
-      <AiOutlineLoading3Quarters
+      <Loading3QuartersOutlined
         style={{ color: 'green' }}
         className='text-[40px] animation_spin1s '
       />

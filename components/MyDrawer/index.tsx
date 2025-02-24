@@ -1,28 +1,44 @@
-import { useDrawer } from '@/zustand/useDrawer';
-import { Drawer } from '@mantine/core';
-import { NextPage } from 'next';
-import React, { useEffect } from 'react';
-import { isIOS } from 'react-device-detect';
+import { useDrawer } from '@/zustand/useDrawer'
+import { Drawer } from 'antd'
+import { NextPage } from 'next'
+import React, { useEffect } from 'react'
+import { isIOS } from 'react-device-detect'
 
-const MyDrawer: NextPage = () => {
-	const { closeDrawer, drawer } = useDrawer();
+const ModalDrawer: NextPage = () => {
+  const { closeDrawer, drawer } = useDrawer()
 
-	useEffect(() => {
-		if (drawer?.opened) {
-			document.body.style.overflow = 'hidden';
-		} else {
-			document.body.style.overflow = 'unset';
-		}
-	}, [drawer]);
+  useEffect(() => {
+    if (drawer.open) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+  }, [drawer])
 
-	return (
-		<Drawer title={drawer.title} position={drawer.position || 'bottom'} size={drawer?.width} opened={drawer?.opened || false} onClose={closeDrawer} className="!max-h-[calc(100dvh-60px)]">
-			<div className="h-full">
-				{drawer.content ?? <></>}
-				{isIOS && <div className="w-full mb-1" />}
-			</div>
-		</Drawer>
-	);
-};
+  return (
+    <Drawer
+      onClose={closeDrawer}
+      style={{
+        maxHeight: drawer.placement === 'right' || drawer.placement === 'left' ? 'unset' : '95dvh',
+      }}
+      {...drawer}
+      className={`${drawer?.noPadding ? 'drawer-body-no-padding' : ''} ${drawer.className}`}
+    >
+      <div
+        className='flex flex-col w-full'
+        style={{
+          maxHeight:
+            drawer.placement === 'right' || drawer.placement === 'left'
+              ? 'calc(100dvh - 100px)'
+              : 'calc(95dvh - 100px)',
+          height: 'auto',
+        }}
+      >
+        {drawer.content ?? <></>}
+        {isIOS && <div className='w-full mb-1' />}
+      </div>
+    </Drawer>
+  )
+}
 
-export default MyDrawer;
+export default ModalDrawer
