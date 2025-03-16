@@ -18,7 +18,7 @@ import AdminApi from '@/services/adminApi'
 import MyBlog from '@/components/MyBlog'
 import { PATH_IMG } from '@/constant/mongoDB'
 import AttributeAdmin from '@/components/AttributeAdmin'
-import { SEX, TYPE_PRODUCT } from '@/constant/admin'
+import { SEX, TYPE_PRODUCT, VALUE_KEY_DEFAULT } from '@/constant/admin'
 import { INIT_DATA_MY_BLOG } from '@/constant/app'
 import useCallbackToast from '@/hook/useCallbackToast'
 
@@ -32,8 +32,6 @@ const ProductConfig = ({ item }: { item: any }) => {
   const [formData, setFormData] = useState<{ [key: string]: any } | null>(null)
   const [loading, setLoading] = useState(false)
 
-  console.log({ formData })
-
   useEffect(() => {
     const initData = {
       cost: item?.cost || 0,
@@ -41,7 +39,8 @@ const ProductConfig = ({ item }: { item: any }) => {
       disCount: item?.disCount || 0,
       dateEndSale: item?.dateEndSale || new Date().getTime(),
       dateSale: item?.dateSale || new Date().getTime(),
-      images: item?.images || [],
+      imageMore: item?.imageMore || [],
+      imageMain: item?.imageMain || '',
       des: item?.des || '',
       des2: item?.des2 ? JSON.parse(item?.des2) : INIT_DATA_MY_BLOG,
       name: item?.name || '',
@@ -51,7 +50,7 @@ const ProductConfig = ({ item }: { item: any }) => {
       numberLike: item?.numberLike || 1,
       price: item?.price || 1,
       sold: item?.sold || 0,
-      typeProduct: item?.typeProduct || 'shoes',
+      typeProduct: item?.typeProduct || 'water',
       weight: item?.weight || '',
       category: item?.category || 'water',
       desSeo: item?.desSeo || '',
@@ -67,9 +66,9 @@ const ProductConfig = ({ item }: { item: any }) => {
     if (!item && dataClone) {
       switch (formData?.category) {
         case TYPE_PRODUCT.shoes:
-          const arrModel = [
+          const arrColors = [
             {
-              model: 'model_1',
+              color: VALUE_KEY_DEFAULT.sizes[0],
               sold: 0,
               amount: 10,
             },
@@ -77,10 +76,10 @@ const ProductConfig = ({ item }: { item: any }) => {
 
           dataClone.attributes = {
             sex: [SEX.female, SEX.male],
-            model: [
+            sizes: [
               {
                 size: '40',
-                model: arrModel,
+                colors: arrColors,
               },
             ],
           }
@@ -106,14 +105,19 @@ const ProductConfig = ({ item }: { item: any }) => {
   }
 
   const handleDeleteMoreImg = (index: number) => {
-    const newList = formData?.images?.filter((_: any, indexFilter: number) => indexFilter !== index)
-    setFormData({ ...formData, images: newList })
+    const newList = formData?.imageMore?.filter(
+      (_: any, indexFilter: number) => indexFilter !== index
+    )
+    setFormData({ ...formData, imageMore: newList })
   }
 
   const getImgDelete = (): string[] => {
-    const list: string[] = []
-    item?.images.forEach((e: string) => {
-      const isExited = formData?.images?.find((eForm: any) => eForm === e)
+    const list = []
+    if (item?.imageMain !== formData?.imageMain) {
+      list.push(item?.imageMain)
+    }
+    item?.imageMore.forEach((e: string) => {
+      const isExited = formData?.imageMore?.find((eForm: any) => eForm === e)
       if (!isExited) {
         list.push(e)
       }
@@ -178,11 +182,7 @@ const ProductConfig = ({ item }: { item: any }) => {
       <div className='flex flex-col  w-full flex-1 overflow-y-auto '>
         <div className='flex md:gap-4 w-full md:flex-row flex-col'>
           <InputForm classFromItem='w-full' name='name' label={translate('header.name')} required />
-          <CategoryForm
-            label={translate('menuProduct.category')}
-            name='category'
-            classFromItem='min-w-[150px]'
-          />
+          <CategoryForm label={translate('menuProduct.category')} name='category' />
         </div>
 
         <div className='flex md:gap-4 w-full md:flex-row flex-col '>
@@ -244,14 +244,39 @@ const ProductConfig = ({ item }: { item: any }) => {
           />
         </div>
         <div className='flex gap-3 justify-between  mt-2'>
-          <div className='w-full h-full flex flex-col  gap-3 justify-between items-center'>
+          <div className='flex flex-col  w-[150px]   justify-between items-center'>
+            <div className='w-[100px]'>
+              <UploadImage
+                maxSizeOutputKB={500}
+                maxPixelReduce={500}
+                handleUpload={(e) => setFormData({ ...formData, imageMain: e })}
+              >
+                <div className='flex gap-2'>
+                  <CameraOutlined />
+                  <span>{translate('admin.imageMain')}</span>
+                </div>
+              </UploadImage>
+            </div>
+
+            <div className='w-[150px] flex justify-center '>
+              {(formData?.imageMain?.base64 || formData?.imageMain) && (
+                <div className='w-[100px] aspect-square overflow-hidden'>
+                  <Image
+                    alt='img-main'
+                    src={detectImg(formData?.imageMain?.base64 || formData?.imageMain)}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+          <div className='w-[calc(100%-200px)] h-full flex flex-col  gap-3 justify-between items-center'>
             <div className='w-full'>
               <UploadImage
-                listData={formData?.images || []}
+                listData={formData?.imageMore || []}
                 handleUpload={(e) =>
                   setFormData({
                     ...formData,
-                    images: [...formData?.images, e],
+                    imageMore: [...formData?.imageMore, e],
                   })
                 }
                 maxSizeOutputKB={300}
@@ -259,19 +284,19 @@ const ProductConfig = ({ item }: { item: any }) => {
               >
                 <div className='flex w-full gap-2 justify-center items-center'>
                   <CameraOutlined />
-                  <span>{translate('textPopular.image')}</span>
+                  <span>{translate('admin.imageThumbnail')}</span>
                 </div>
               </UploadImage>
             </div>
             <div className='flex flex-nowrap gap-3 overflow-scroll w-full '>
-              {formData?.images &&
-                formData?.images.map((e: any, index: number) => {
+              {formData?.imageMore &&
+                formData?.imageMore.map((e: any, index: number) => {
                   return (
                     <div className='w-[100px]' key={detectImg(e?.base64 || e)}>
                       <div className='w-[100px] relative'>
                         <Image
                           className='w-[100px]'
-                          alt={`images-${e?.name}`}
+                          alt={`img-moew-${e?.name}`}
                           src={detectImg(e?.base64 || e)}
                         />
                         <CloseCircleOutlined

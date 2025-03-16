@@ -84,7 +84,7 @@ const AttributeAdmin = ({ data, onChange, typeProduct = 'shoes' }: IAttributeAdm
             newData.value = [
               {
                 size: '38',
-                model: [],
+                colors: [],
               },
             ]
             break
@@ -124,7 +124,6 @@ const AttributeAdmin = ({ data, onChange, typeProduct = 'shoes' }: IAttributeAdm
                       onChange={(param) => onChangeValueData(index, param)}
                       keyIndex={`item-${index}`}
                       data={e}
-                      keyType={e.key}
                     />
                   </div>
                 )

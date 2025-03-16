@@ -1,23 +1,68 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 import MyCollapse, { ItemCollapseProps } from '@/components/MyCollapse'
-import { Input } from 'antd'
+import { Button, Input, Select } from 'antd'
 import useLanguage from '@/hook/useLanguage'
-import { DeleteOutlined, DiffOutlined, PlusCircleOutlined } from '@ant-design/icons'
+import { DeleteOutlined, DiffOutlined, PlusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { cloneData, isObject } from '@/utils/functions'
 import { useModalAdmin } from '@/zustand/useModalAdmin'
 import ModalDelete from '@/components/ModalDelete'
-import MyInput from '@/components/MyInput'
+import { VALUE_KEY_DEFAULT } from '@/constant/admin'
+import { PropsSelectItem } from '@/components/MySelect'
 
 export type IEditItemAttributesProps = {
   data: any
   onChange: (param?: any) => void
   keyIndex?: string
-  keyType: string
 }
 
-const AttributeShoes = ({ keyType, data, onChange, keyIndex = '' }: IEditItemAttributesProps) => {
+const SelectCustom = ({ value, onChange, handleAddNew, options }: any) => {
+  const { translate } = useLanguage()
+  const inputRef = useRef(null)
+  const [newValue, setNewValue] = useState('')
+
+  const handleAddNewItem = async () => {
+    setNewValue('')
+    handleAddNew(newValue)
+  }
+
+  return (
+    <Select
+      className='md:min-w-[200px] min-w-[150px]'
+      value={value}
+      onChange={(e) => onChange(e)}
+      options={options}
+      dropdownRender={(menu: any) => (
+        <>
+          {menu}
+          <div className='flex flex-col gap-2 mt-2'>
+            <Input
+              // placeholder={translate('textPopular.size')}
+              ref={inputRef}
+              value={newValue}
+              onChange={(e) => setNewValue(e.target.value)}
+              onKeyDown={(e) => e.stopPropagation()}
+              className='flex-1'
+            />
+            <Button type='text' icon={<PlusOutlined />} onClick={handleAddNewItem}>
+              {translate('common.addNew')}
+            </Button>
+          </div>
+        </>
+      )}
+    />
+  )
+}
+
+const AttributeShoes = ({ data, onChange, keyIndex = '' }: IEditItemAttributesProps) => {
   const { translate } = useLanguage()
   const { openModal } = useModalAdmin()
+
+  const [optionKeyValues, setOptionKeyValues] = useState<PropsSelectItem[]>(
+    VALUE_KEY_DEFAULT.sizes.map((e) => ({
+      label: translate(`admin.color.${e}`),
+      value: e,
+    }))
+  )
 
   const onChangeValueData = (
     indexParent: number,
@@ -28,7 +73,7 @@ const AttributeShoes = ({ keyType, data, onChange, keyIndex = '' }: IEditItemAtt
   ) => {
     const dataClone = cloneData(data)
     if (isObj) {
-      dataClone.value[indexParent][keyType][index][key] = value
+      dataClone.value[indexParent].colors[index][key] = value
     } else {
       dataClone.value[indexParent] = value
     }
@@ -38,9 +83,8 @@ const AttributeShoes = ({ keyType, data, onChange, keyIndex = '' }: IEditItemAtt
   const handleDeleteValueData = (indexParent: number, index: number, isObj = true) => {
     const callBack = () => {
       const dataClone = cloneData(data)
-
       if (isObj) {
-        dataClone.value[indexParent][keyType] = dataClone.value[indexParent][keyType].filter(
+        dataClone.value[indexParent].colors = dataClone.value[indexParent].colors.filter(
           (_: any, indexFilter: number) => indexFilter !== index
         )
       } else {
@@ -58,13 +102,10 @@ const AttributeShoes = ({ keyType, data, onChange, keyIndex = '' }: IEditItemAtt
 
   const handleAddValueData = (indexParent: number) => {
     const dataClone = cloneData(data)
-
-    dataClone.value[indexParent][keyType].push({
-      [keyType]: `${keyType}_${dataClone.value[indexParent][keyType].length + 1}`,
-      sold: 0,
-      amount: 10,
+    dataClone.value[indexParent].colors.push({
+      color: `color-${dataClone.value[indexParent].colors.length}`,
+      amount: '1',
     })
-
     onChange(dataClone)
   }
 
@@ -97,6 +138,7 @@ const AttributeShoes = ({ keyType, data, onChange, keyIndex = '' }: IEditItemAtt
 
   const onChangeKey = (value: string) => {
     const dataClone = cloneData(data)
+    console.log({ dataClone })
 
     dataClone.key = value
     onChange(dataClone)
@@ -107,14 +149,21 @@ const AttributeShoes = ({ keyType, data, onChange, keyIndex = '' }: IEditItemAtt
     const isObj = dataClone.value.some((e: any) => isObject(e))
 
     if (isObj) {
+      // const newData = optionKeyValues.map((e) => {
+      //   return {
+      //     color: e.value,
+      //     amount: 10,
+      //     sold: 0,
+      //   }
+      // })
       const newData = {
-        [keyType]: dataClone.value.length + 1,
+        color: optionKeyValues[0].value,
         amount: 10,
         sold: 0,
       }
       dataClone.value.push({
         size: 0,
-        [keyType]: [newData],
+        colors: [newData],
       })
     } else {
       dataClone.value.push('new value')
@@ -135,7 +184,7 @@ const AttributeShoes = ({ keyType, data, onChange, keyIndex = '' }: IEditItemAtt
 
   const renderValue = (val: any, index: number) => {
     const key = val['size']
-    const value = val[keyType]
+    const value = val['colors']
     const items: ItemCollapseProps = [
       {
         key: `renderValue-${index}`,
@@ -172,8 +221,19 @@ const AttributeShoes = ({ keyType, data, onChange, keyIndex = '' }: IEditItemAtt
               return (
                 <div key={`valeDetail-${indexDetail}`} className='flex gap-2 items-center'>
                   <div className='flex flex-col gap-1'>
-                    <div>{`Model: ${indexDetail + 1}`}</div>
-                    <MyInput value={valeDetail[keyType]} />
+                    <div>{`Color ${indexDetail + 1}`}</div>
+                    <SelectCustom
+                      options={optionKeyValues}
+                      value={valeDetail['color']}
+                      onChange={(e: string) => onChangeValueData(index, indexDetail, 'color', e)}
+                      handleAddNew={(e: string) => {
+                        const dataTemp: PropsSelectItem = {
+                          label: e,
+                          value: e,
+                        }
+                        setOptionKeyValues([...optionKeyValues, dataTemp])
+                      }}
+                    />
                   </div>
                   <div className='flex flex-col gap-1'>
                     <div>{translate('textPopular.amount')}</div>
