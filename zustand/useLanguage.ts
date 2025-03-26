@@ -66,7 +66,7 @@ export const zustandLanguage = createStore<LanguageStore>()(
     ),
     {
       name: nameZustand,
-      enabled: process.env.NEXT_PUBLIC_DISABLE_DEV === undefined,
+      enabled: process.env.NEXT_PUBLIC_ENV !== 'production',
     }
   )
 )

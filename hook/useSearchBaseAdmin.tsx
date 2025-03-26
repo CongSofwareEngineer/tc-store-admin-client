@@ -12,7 +12,7 @@ import useQuerySearch from './useQuerySearch'
 import MyDatePickerForm from '@/components/Form/MyDatePickerForm'
 import StatusFormBill from '@/components/Form/StatusFormBill'
 import { FILTER_BILL } from '@/constant/app'
-import { Button } from 'antd'
+import { Button, Form } from 'antd'
 import { useCategoryMenu } from '@/zustand/useCategoryMenu'
 import { convertDateToNumber, formatDateTime } from '@/utils/momentFunc'
 
@@ -67,6 +67,8 @@ const useSearchBaseAdmin = (
   const { queries } = useQuerySearch()
   const [formData, setFormData] = useState<{ [key: string]: any } | null>(null)
 
+  const [form] = Form.useForm()
+
   useEffect(() => {
     const getValueQuery = (key: string, defaultValues: any = '') => {
       let value = null
@@ -78,8 +80,8 @@ const useSearchBaseAdmin = (
 
     const getCategory = () => {
       const initData = {
-        label: categoryMenu[0]?.lang?.[lang || 'vn'].toString() || '',
-        value: categoryMenu[0]?.keyName.toString() || '',
+        label: 'All',
+        value: 'all',
       }
       if (queries?.['category']) {
         const dataLan = categoryMenu.find((e) => e.keyName === queries?.['category'][0]!)
@@ -104,15 +106,20 @@ const useSearchBaseAdmin = (
         // dateStart: dayjs(new Date(Date.now()).setDate(new Date().getDate() - 7)),
         // dateEnd: dayjs(new Date(Date.now()).setDate(new Date().getDate())),
       }
+      console.log('====================================')
       setFormData(initData)
+      form.setFieldsValue(initData)
     }
 
     return () => setFormData(null)
-  }, [categoryMenu, lang, queries, isClient])
+  }, [categoryMenu, lang, queries, isClient, defaultValue, form])
 
   const clearSearch = () => {
     const initData = {
-      category: '',
+      category: {
+        label: 'All',
+        value: 'all',
+      },
       id: '',
       sdt: '',
       keyName: '',
@@ -125,6 +132,7 @@ const useSearchBaseAdmin = (
       // dateEnd: dayjs(new Date(Date.now()).setDate(new Date().getDate())),
     }
     setFormData(initData)
+    form.setFieldsValue(initData)
     router.push(pathPage)
   }
 
@@ -173,10 +181,14 @@ const useSearchBaseAdmin = (
     return (
       <div className='flex  flex-col gap-3 '>
         <MyForm
-          onValuesChange={(_, value) => setFormData({ ...formData, ...value })}
+          onValuesChange={(_, value) => {
+            setFormData({ ...formData, ...value })
+            form.setFieldsValue({ ...formData, ...value })
+          }}
           formData={formData}
           onFinish={handleSubmit}
           className='w-full'
+          form={form}
         >
           <div className='flex justify-between flex-wrap'>
             {param?.id && (

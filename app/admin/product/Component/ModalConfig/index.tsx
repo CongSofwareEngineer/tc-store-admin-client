@@ -23,6 +23,7 @@ import useCallbackToast from '@/hook/useCallbackToast'
 import { INewProduct } from '../../type'
 import ModelConfig from '../ModelConfig'
 import ImageConfig from '../ImageConfig'
+import Attributes from '../Attributes'
 
 const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: () => void }) => {
   const { translate } = useLanguage()
@@ -40,7 +41,7 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
       disCount: item?.disCount || 0,
       dateEndSale: item?.dateEndSale || new Date().getTime(),
       dateSale: item?.dateSale || new Date().getTime(),
-      images: item?.images || '',
+      images: item?.images || [],
       des: item?.des || '',
       des2: item?.des2 ? JSON.parse(item?.des2) : INIT_DATA_MY_BLOG,
       name: item?.name || '',
@@ -52,7 +53,7 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
       category: item?.category || 'water',
       desSeo: item?.desSeo || '',
       titleSeo: item?.titleSeo || '',
-      attributes: item?.attributes || {},
+      attributes: item?.attributes || [],
       hsd: item?.hsd || '',
       models: item?.models || [],
       nsx: item?.nsx || '',
@@ -60,18 +61,17 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
     setFormData(initData)
   }, [item])
 
-  const onChangeBlog = (value: any) => {
-    // setFormData((pre) => ({
-    //   ...pre,
-    //   des2: value,
-    // }))
-  }
+  useEffect(() => {
+    console.log('====================================')
+    console.log({ formData })
+    console.log('====================================')
+  }, [formData])
 
-  const handleDeleteMoreImg = (index: number) => {
-    // const newList = formData?.images?.filter(
-    //   (_: any, indexFilter: number) => indexFilter !== index
-    // )
-    // setFormData({ ...formData, images: newList })
+  const onChangeBlog = (value: any) => {
+    setFormData((pre) => ({
+      ...pre!,
+      des2: value,
+    }))
   }
 
   const getImgDelete = (): string[] => {
@@ -140,8 +140,6 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
     setFormData({ ...formData, ...value })
   }
 
-  const onChangeImg = (file: any) => {}
-
   return (
     <MyForm
       onValuesChange={onChangeForm}
@@ -152,7 +150,11 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
       <div className='flex flex-col  w-full flex-1 overflow-y-auto '>
         <div className='flex md:gap-4 w-full md:flex-row flex-col'>
           <InputForm classFromItem='w-full' name='name' label={translate('header.name')} required />
-          <CategoryForm label={translate('menuProduct.category')} name='category' />
+          <CategoryForm
+            classFromItem='md:!w-[200px]'
+            label={translate('menuProduct.category')}
+            name='category'
+          />
         </div>
 
         <div className='flex md:gap-4 w-full md:flex-row flex-col '>
@@ -213,14 +215,28 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
             disable={!!item}
           />
         </div>
-        <div className='w-full'>
+        <ModelConfig
+          data={formData?.models!}
+          onChange={(e) => setFormData({ ...formData!, models: e })}
+        />
+        <div className='w-full mt-3' />
+        <Attributes
+          data={formData?.attributes}
+          onChange={(e) => setFormData({ ...formData!, attributes: e })}
+        />
+        <div className='w-full mt-3'>
           <UploadImage
             listData={formData?.images || []}
             handleUpload={(e) => {
-              // setFormData({
-              //   ...formData,
-              //   images: [...formData?.images, e],
-              // })
+              const dataImg = {
+                url: e,
+                model: '',
+              }
+
+              setFormData({
+                ...formData!,
+                images: [...formData?.images!, dataImg],
+              })
             }}
             maxSizeOutputKB={300}
             maxPixelReduce={500}
@@ -232,38 +248,7 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
           </UploadImage>
         </div>
 
-        <ImageConfig
-          data={formData!}
-          onChange={(e) => {
-            if (formData) {
-              setFormData({ ...formData, images: e })
-            }
-          }}
-        />
-        <div className='flex gap-3 justify-between  mt-2'>
-          <div className='w-[calc(100%-200px)] h-full flex flex-col  gap-3 justify-between items-center'>
-            <div className='flex flex-nowrap gap-3 overflow-scroll w-full '>
-              {/* {formData?.imageMore &&
-                formData?.imageMore.map((e: any, index: number) => {
-                  return (
-                    <div className='w-[100px]' key={detectImg(e?.base64 || e)}>
-                      <div className='w-[100px] relative'>
-                        <Image
-                          className='w-[100px]'
-                          alt={`img-moew-${e?.name}`}
-                          src={detectImg(e?.base64 || e)}
-                        />
-                        <CloseCircleOutlined
-                          onClick={() => handleDeleteMoreImg(index)}
-                          className='absolute right-0 top-0 text-[18px] cursor-pointer '
-                        />
-                      </div>
-                    </div>
-                  )
-                })} */}
-            </div>
-          </div>
-        </div>
+        <ImageConfig data={formData!} onChange={(e) => setFormData({ ...formData!, images: e })} />
 
         <InputForm
           classFromItem='w-full'
@@ -271,21 +256,6 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
           label={translate('admin.desSeo')}
           required
           typeBtn='area'
-        />
-        <ModelConfig
-          data={formData?.models!}
-          onChange={(e) => {
-            if (formData) {
-              setFormData({ ...formData, models: e })
-            }
-          }}
-        />
-        <AttributeAdmin
-          typeProduct={formData?.category}
-          data={formData?.models}
-          onChange={(e) => {
-            // setFormData({ ...formData, models: e })
-          }}
         />
 
         <InputForm classFromItem='w-full' name='des' label='des' required typeBtn='area' />

@@ -4,17 +4,16 @@ import { TYPE_PRODUCT } from '@/constant/admin'
 import { COLOR, FILTER_BILL } from '@/constant/app'
 import BigNumber from 'bignumber.js'
 
-export const cloneData = (data: any, defaultValue: any = '') => {
+export const cloneData = <T>(data: T): T => {
   try {
-    if (!data) {
-      return data
+    if (data === undefined || data === null) {
+      return JSON.parse(JSON.stringify(''))
     }
-    return JSON.parse(JSON.stringify(data))
+    return JSON.parse(JSON.stringify(data)) as T
   } catch {
-    return defaultValue
+    return JSON.parse(JSON.stringify(''))
   }
 }
-
 export const isEmptyObject = (data: any) => {
   try {
     return Object.keys(data).length > 0

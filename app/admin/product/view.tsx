@@ -234,7 +234,7 @@ const ProductAdminScreen = () => {
   return (
     <div className='flex flex-col w-full gap-3 overflow-y-auto '>
       {isConfig && (
-        <div className='w-full h-full overflow-y-auto'>
+        <div className='w-full h-full '>
           <ProductConfig
             closeConfig={() => {
               setItemConfig(null)
@@ -248,9 +248,13 @@ const ProductAdminScreen = () => {
 
       <div
         className='flex w-full'
-        style={{
-          display: isConfig ? 'none' : 'contents',
-        }}
+        style={
+          isConfig
+            ? {
+                display: 'none',
+              }
+            : {}
+        }
       >
         <MyTable
           loadMore={loadMore}

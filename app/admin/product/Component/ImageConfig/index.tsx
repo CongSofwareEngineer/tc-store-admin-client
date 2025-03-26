@@ -34,11 +34,11 @@ const ImageConfig = ({ data, onChange }: IImageConfig) => {
   }
 
   return (
-    <div>
+    <div className='flex gap-3 flex-wrap'>
       {data?.images?.map((img, index) => {
         return (
-          <div key={`image_${index}`} className='flex gap-2 flex-wrap w-full'>
-            <div className='md:min-w-[100px] w-[80px] md:min-h-[100px] h-[80px] relative'>
+          <div key={`image_${index}`} className='flex flex-col gap-2 flex-wrap  '>
+            <div className='md:min-w-[150px] w-[100px] md:min-h-[150px] h-[100px] relative'>
               <MyImage alt='img' src={img.url?.base64 || img.url} className='!w-full !h-full ' />
               <CloseCircleOutlined
                 onClick={() => onDelete(index)}
@@ -46,6 +46,7 @@ const ImageConfig = ({ data, onChange }: IImageConfig) => {
               />
             </div>
             <MySelect
+              className='!w-full'
               option={optionModel}
               value={img?.model}
               onChange={(model) => onChangeModel(index, model)}

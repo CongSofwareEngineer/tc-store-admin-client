@@ -37,7 +37,7 @@ export const zustandLanguage = create<ChatSocketStore>()(
     }),
     {
       name: `zustand-${ZUSTAND.ChatSocket}`,
-      enabled: process.env.NEXT_PUBLIC_DISABLE_DEV === undefined,
+      enabled: process.env.NEXT_PUBLIC_ENV !== 'production',
     }
   )
 )

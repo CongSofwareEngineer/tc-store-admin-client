@@ -34,6 +34,9 @@ export type INewProduct = {
   category: string
   titleSeo: string
   desSeo: string
-  attributes?: { [key: string]: any }
+  attributes?: Array<{
+    key: string
+    value: string
+  }>
   models: Array<IModel>
 }

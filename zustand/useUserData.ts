@@ -50,7 +50,7 @@ const zustandUserData = createStore<UserDataStore>()(
     ),
     {
       name: `zustand-${ZUSTAND.UserData}`,
-      enabled: process.env.NEXT_PUBLIC_DISABLE_DEV === undefined,
+      enabled: process.env.NEXT_PUBLIC_ENV !== 'production',
     }
   )
 )
