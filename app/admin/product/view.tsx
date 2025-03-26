@@ -9,7 +9,7 @@ import useQuerySearch from '@/hook/useQuerySearch'
 import useSearchBaseAdmin from '@/hook/useSearchBaseAdmin'
 import { detectImg, ellipsisText, numberWithCommas } from '@/utils/functions'
 import { Button } from 'antd'
-import React from 'react'
+import React, { useState } from 'react'
 import ProductConfig from './Component/ModalConfig'
 import useLanguage from '@/hook/useLanguage'
 import Link from 'next/link'
@@ -22,6 +22,7 @@ import AdminApi from '@/services/adminApi'
 import useFirstLoadPage from '@/hook/useFirstLoadPage'
 
 const ProductAdminScreen = () => {
+  useFirstLoadPage()
   const { renderContent } = useSearchBaseAdmin({
     keyName: true,
     category: true,
@@ -32,25 +33,29 @@ const ProductAdminScreen = () => {
     queries
   )
 
-  useFirstLoadPage()
   const { isMobile } = useMedia()
   const { openModalDrawer } = useModalDrawer()
   const { translate } = useLanguage()
   const { refreshQuery } = useRefreshQuery()
 
+  const [isConfig, setIsConfig] = useState(false)
+  const [itemConfig, setItemConfig] = useState<any>()
+
   const handleUpdate = (item: any) => {
-    openModalDrawer({
-      content: <ProductConfig item={item} />,
-      useDrawer: true,
-      title: item ? `${translate('common.update')} ${item.name}` : translate('common.create'),
-      configModal: {
-        className: '!max-w-[1200px] !w-[85dvw]',
-      },
-      configDrawer: {
-        height: 'auto',
-        placement: 'bottom',
-      },
-    })
+    setItemConfig(item)
+    setIsConfig(true)
+    // openModalDrawer({
+    //   content: <ProductConfig item={item} />,
+    //   useDrawer: true,
+    //   title: item ? `${translate('common.update')} ${item.name}` : translate('common.create'),
+    //   configModal: {
+    //     className: '!max-w-[1200px] !w-[85dvw]',
+    //   },
+    //   configDrawer: {
+    //     height: 'auto',
+    //     placement: 'bottom',
+    //   },
+    // })
   }
 
   const handleDelete = (item: any) => {
@@ -228,8 +233,25 @@ const ProductAdminScreen = () => {
 
   return (
     <div className='flex flex-col w-full gap-3 overflow-y-auto '>
-      {renderContent()}
-      <div className='flex w-full'>
+      {isConfig && (
+        <div className='w-full h-full overflow-y-auto'>
+          <ProductConfig
+            closeConfig={() => {
+              setItemConfig(null)
+              setIsConfig(false)
+            }}
+            item={itemConfig}
+          />
+        </div>
+      )}
+      {!isConfig && renderContent()}
+
+      <div
+        className='flex w-full'
+        style={{
+          display: isConfig ? 'none' : 'contents',
+        }}
+      >
         <MyTable
           loadMore={loadMore}
           hasMoreData={hasNextPage}

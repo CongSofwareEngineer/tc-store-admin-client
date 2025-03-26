@@ -14,6 +14,7 @@ type ButtonFormType = {
   classBtnSubmit?: string
   classBtnCancel?: string
   disabledSubmit?: boolean
+  onClickBtnCancel?: () => any
 }
 const ButtonForm = ({
   loading,
@@ -25,6 +26,7 @@ const ButtonForm = ({
   classBtnCancel = '',
   classNameItem = '',
   disabledSubmit = false,
+  onClickBtnCancel,
 }: ButtonFormType) => {
   const { translate } = useLanguage()
   const { closeModalDrawer } = useModalDrawer()
@@ -45,7 +47,13 @@ const ButtonForm = ({
         <Button
           disabled={loading}
           className={`flex flex-1 w-[150px] ${classBtnCancel}`}
-          onClick={closeModalDrawer}
+          onClick={() => {
+            if (onClickBtnCancel) {
+              onClickBtnCancel()
+            } else {
+              closeModalDrawer()
+            }
+          }}
           type='primary'
         >
           {titleClose || translate('common.close')}

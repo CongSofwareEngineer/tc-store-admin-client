@@ -112,7 +112,7 @@ const AttributeAdmin = ({ data, onChange, typeProduct = 'shoes' }: IAttributeAdm
   const items = [
     {
       key: 'Attribute',
-      label: <div>{translate('textPopular.attribute')} </div>,
+      label: <div>{'M'} </div>,
       children: (
         <div className='flex flex-col gap-2'>
           {dataAttributes.map((e, index) => {

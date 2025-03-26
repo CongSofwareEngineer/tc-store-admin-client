@@ -1,8 +1,8 @@
-import Image from 'next/image'
+import Image, { ImageProps } from 'next/image'
 import React, { useState } from 'react'
 import { useInView } from 'react-intersection-observer'
 
-const MyImage = (props: any) => {
+const MyImage = ({ ...props }: ImageProps) => {
   const { ref, inView } = useInView({ threshold: 0, triggerOnce: true, rootMargin: '150px' })
   const [loaded, setLoaded] = useState(false)
 
@@ -15,7 +15,7 @@ const MyImage = (props: any) => {
       onLoad={() => {
         setLoaded(true)
         if (props.onLoad) {
-          props.onLoad()
+          // props.onLoad()
         }
       }}
       style={{

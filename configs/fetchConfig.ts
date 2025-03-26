@@ -78,7 +78,7 @@ const fetchConfig = async ({
   timeOut = 70000,
 }: ServerAPIReqType): Promise<{ data: any; error?: any; messages: any }> => {
   const config: any = {
-    baseURL: process.env.NEXT_PUBLIC_API_APP,
+    baseURL: 'http://localhost:3002/',
     url,
     // cache: isCache ? 'force-cache' : 'no-store',
     method,

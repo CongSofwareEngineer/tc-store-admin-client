@@ -5,11 +5,10 @@ import React, { useEffect, useState } from 'react'
 import CategoryForm from '@/components/CategoryForm'
 import useLanguage from '@/hook/useLanguage'
 import { CameraOutlined, CloseCircleOutlined } from '@ant-design/icons'
-import { Image } from 'antd'
+import { Form, Image } from 'antd'
 import useCheckForm from '@/hook/useCheckForm'
 import useRefreshQuery from '@/hook/tank-query/useRefreshQuery'
 import { QUERY_KEY } from '@/constant/reactQuery'
-import useModalDrawer from '@/hook/useModalDrawer'
 import { isEqual } from 'lodash'
 import UploadImage from '@/components/UploadImg'
 import InputForm from '@/components/Form/InputForm'
@@ -21,26 +20,27 @@ import AttributeAdmin from '@/components/AttributeAdmin'
 import { SEX, TYPE_PRODUCT, VALUE_KEY_DEFAULT } from '@/constant/admin'
 import { INIT_DATA_MY_BLOG } from '@/constant/app'
 import useCallbackToast from '@/hook/useCallbackToast'
+import { INewProduct } from '../../type'
+import ModelConfig from '../ModelConfig'
+import ImageConfig from '../ImageConfig'
 
-const ProductConfig = ({ item }: { item: any }) => {
+const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: () => void }) => {
   const { translate } = useLanguage()
   const { checkIsNumber } = useCheckForm()
   const { refreshQuery } = useRefreshQuery()
-  const { closeModalDrawer } = useModalDrawer()
   const { updateError, createSuccess, updateSuccess, createError } = useCallbackToast()
 
-  const [formData, setFormData] = useState<{ [key: string]: any } | null>(null)
+  const [formData, setFormData] = useState<INewProduct | null>(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    const initData = {
+    const initData: INewProduct = {
       cost: item?.cost || 0,
       amount: item?.amount || 100,
       disCount: item?.disCount || 0,
       dateEndSale: item?.dateEndSale || new Date().getTime(),
       dateSale: item?.dateSale || new Date().getTime(),
-      imageMore: item?.imageMore || [],
-      imageMain: item?.imageMain || '',
+      images: item?.images || '',
       des: item?.des || '',
       des2: item?.des2 ? JSON.parse(item?.des2) : INIT_DATA_MY_BLOG,
       name: item?.name || '',
@@ -49,81 +49,44 @@ const ProductConfig = ({ item }: { item: any }) => {
       linkFacebook: item?.linkFacebook || '',
       numberLike: item?.numberLike || 1,
       price: item?.price || 1,
-      sold: item?.sold || 0,
-      typeProduct: item?.typeProduct || 'water',
-      weight: item?.weight || '',
       category: item?.category || 'water',
       desSeo: item?.desSeo || '',
       titleSeo: item?.titleSeo || '',
       attributes: item?.attributes || {},
+      hsd: item?.hsd || '',
+      models: item?.models || [],
+      nsx: item?.nsx || '',
     }
     setFormData(initData)
   }, [item])
 
-  useEffect(() => {
-    const dataClone = cloneData(formData)
-
-    if (!item && dataClone) {
-      switch (formData?.category) {
-        case TYPE_PRODUCT.shoes:
-          const arrColors = [
-            {
-              color: VALUE_KEY_DEFAULT.sizes[0],
-              sold: 0,
-              amount: 10,
-            },
-          ]
-
-          dataClone.attributes = {
-            sex: [SEX.female, SEX.male],
-            sizes: [
-              {
-                size: '40',
-                colors: arrColors,
-              },
-            ],
-          }
-
-          setFormData(dataClone)
-
-          break
-
-        default:
-          dataClone.attributes = {}
-          setFormData(dataClone)
-
-          break
-      }
-    }
-  }, [formData?.category, item])
-
   const onChangeBlog = (value: any) => {
-    setFormData((pre) => ({
-      ...pre,
-      des2: value,
-    }))
+    // setFormData((pre) => ({
+    //   ...pre,
+    //   des2: value,
+    // }))
   }
 
   const handleDeleteMoreImg = (index: number) => {
-    const newList = formData?.imageMore?.filter(
-      (_: any, indexFilter: number) => indexFilter !== index
-    )
-    setFormData({ ...formData, imageMore: newList })
+    // const newList = formData?.images?.filter(
+    //   (_: any, indexFilter: number) => indexFilter !== index
+    // )
+    // setFormData({ ...formData, images: newList })
   }
 
   const getImgDelete = (): string[] => {
-    const list = []
-    if (item?.imageMain !== formData?.imageMain) {
-      list.push(item?.imageMain)
-    }
-    item?.imageMore.forEach((e: string) => {
-      const isExited = formData?.imageMore?.find((eForm: any) => eForm === e)
-      if (!isExited) {
-        list.push(e)
-      }
-    })
-
-    return list
+    // const list = []
+    // if (item?.images !== formData?.images) {
+    //   list.push(item?.images)
+    // }
+    // item?.images.forEach((e: string) => {
+    //   const isExited = formData?.images?.find((eForm: any) => eForm === e)
+    //   if (!isExited) {
+    //     list.push(e)
+    //   }
+    // })
+    // return list
+    return []
   }
 
   const handleSubmit = async () => {
@@ -132,8 +95,9 @@ const ProductConfig = ({ item }: { item: any }) => {
     if (item) {
       const dataEdit: Record<string, any> = {}
       Object.keys(item).forEach((key) => {
-        if (formData![key] && !isEqual(formData![key], item[key])) {
-          dataEdit[key] = formData![key]
+        const keyName = key as keyof INewProduct
+        if (formData![keyName] && !isEqual(formData![keyName], item[keyName])) {
+          dataEdit[keyName] = formData![keyName]
         }
       })
       dataEdit.titleSeo = formData?.titleSeo
@@ -143,7 +107,7 @@ const ProductConfig = ({ item }: { item: any }) => {
         dataEdit.imagesDelete = getImgDelete()
         dataEdit.des2 = JSON.stringify(dataEdit.des2)
 
-        data = await AdminApi.updateProduct(item._id, dataEdit)
+        data = await AdminApi.updateProduct(item._id!, dataEdit)
       }
       console.log({ dataEdit, formData })
     } else {
@@ -161,7 +125,7 @@ const ProductConfig = ({ item }: { item: any }) => {
       } else {
         createSuccess()
       }
-      closeModalDrawer()
+      closeConfig()
     } else {
       if (item) {
         createError()
@@ -172,12 +136,18 @@ const ProductConfig = ({ item }: { item: any }) => {
     setLoading(false)
   }
 
+  const onChangeForm = (_: any, value: INewProduct) => {
+    setFormData({ ...formData, ...value })
+  }
+
+  const onChangeImg = (file: any) => {}
+
   return (
     <MyForm
-      onValuesChange={(_, value) => setFormData({ ...formData, ...value })}
+      onValuesChange={onChangeForm}
       formData={formData}
       onFinish={handleSubmit}
-      className='!overflow-auto !w-full gap-2 md:max-h-[85vh]'
+      className='  !w-full gap-2 '
     >
       <div className='flex flex-col  w-full flex-1 overflow-y-auto '>
         <div className='flex md:gap-4 w-full md:flex-row flex-col'>
@@ -243,53 +213,37 @@ const ProductConfig = ({ item }: { item: any }) => {
             disable={!!item}
           />
         </div>
-        <div className='flex gap-3 justify-between  mt-2'>
-          <div className='flex flex-col  w-[150px]   justify-between items-center'>
-            <div className='w-[100px]'>
-              <UploadImage
-                maxSizeOutputKB={500}
-                maxPixelReduce={500}
-                handleUpload={(e) => setFormData({ ...formData, imageMain: e })}
-              >
-                <div className='flex gap-2'>
-                  <CameraOutlined />
-                  <span>{translate('admin.imageMain')}</span>
-                </div>
-              </UploadImage>
+        <div className='w-full'>
+          <UploadImage
+            listData={formData?.images || []}
+            handleUpload={(e) => {
+              // setFormData({
+              //   ...formData,
+              //   images: [...formData?.images, e],
+              // })
+            }}
+            maxSizeOutputKB={300}
+            maxPixelReduce={500}
+          >
+            <div className='flex w-full gap-2 justify-center items-center'>
+              <CameraOutlined />
+              <span>{translate('textPopular.image')}</span>
             </div>
+          </UploadImage>
+        </div>
 
-            <div className='w-[150px] flex justify-center '>
-              {(formData?.imageMain?.base64 || formData?.imageMain) && (
-                <div className='w-[100px] aspect-square overflow-hidden'>
-                  <Image
-                    alt='img-main'
-                    src={detectImg(formData?.imageMain?.base64 || formData?.imageMain)}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
+        <ImageConfig
+          data={formData!}
+          onChange={(e) => {
+            if (formData) {
+              setFormData({ ...formData, images: e })
+            }
+          }}
+        />
+        <div className='flex gap-3 justify-between  mt-2'>
           <div className='w-[calc(100%-200px)] h-full flex flex-col  gap-3 justify-between items-center'>
-            <div className='w-full'>
-              <UploadImage
-                listData={formData?.imageMore || []}
-                handleUpload={(e) =>
-                  setFormData({
-                    ...formData,
-                    imageMore: [...formData?.imageMore, e],
-                  })
-                }
-                maxSizeOutputKB={300}
-                maxPixelReduce={500}
-              >
-                <div className='flex w-full gap-2 justify-center items-center'>
-                  <CameraOutlined />
-                  <span>{translate('admin.imageThumbnail')}</span>
-                </div>
-              </UploadImage>
-            </div>
             <div className='flex flex-nowrap gap-3 overflow-scroll w-full '>
-              {formData?.imageMore &&
+              {/* {formData?.imageMore &&
                 formData?.imageMore.map((e: any, index: number) => {
                   return (
                     <div className='w-[100px]' key={detectImg(e?.base64 || e)}>
@@ -306,7 +260,7 @@ const ProductConfig = ({ item }: { item: any }) => {
                       </div>
                     </div>
                   )
-                })}
+                })} */}
             </div>
           </div>
         </div>
@@ -318,10 +272,20 @@ const ProductConfig = ({ item }: { item: any }) => {
           required
           typeBtn='area'
         />
+        <ModelConfig
+          data={formData?.models!}
+          onChange={(e) => {
+            if (formData) {
+              setFormData({ ...formData, models: e })
+            }
+          }}
+        />
         <AttributeAdmin
           typeProduct={formData?.category}
-          data={formData?.attributes}
-          onChange={(e) => setFormData({ ...formData, attributes: e })}
+          data={formData?.models}
+          onChange={(e) => {
+            // setFormData({ ...formData, models: e })
+          }}
         />
 
         <InputForm classFromItem='w-full' name='des' label='des' required typeBtn='area' />
@@ -337,6 +301,7 @@ const ProductConfig = ({ item }: { item: any }) => {
         <ButtonForm
           titleSubmit={translate(item ? 'common.update' : 'common.create')}
           loading={loading}
+          onClickBtnCancel={closeConfig}
         />
       </div>
     </MyForm>
