@@ -1,11 +1,9 @@
 import MyForm from '@/components/Form/MyForm'
-import { cloneData, detectImg } from '@/utils/functions'
 import React, { useEffect, useState } from 'react'
 
 import CategoryForm from '@/components/CategoryForm'
 import useLanguage from '@/hook/useLanguage'
-import { CameraOutlined, CloseCircleOutlined } from '@ant-design/icons'
-import { Form, Image } from 'antd'
+import { CameraOutlined } from '@ant-design/icons'
 import useCheckForm from '@/hook/useCheckForm'
 import useRefreshQuery from '@/hook/tank-query/useRefreshQuery'
 import { QUERY_KEY } from '@/constant/reactQuery'
@@ -16,11 +14,9 @@ import ButtonForm from '@/components/Form/ButtonForm'
 import AdminApi from '@/services/adminApi'
 import MyBlog from '@/components/MyBlog'
 import { PATH_IMG } from '@/constant/mongoDB'
-import AttributeAdmin from '@/components/AttributeAdmin'
-import { SEX, TYPE_PRODUCT, VALUE_KEY_DEFAULT } from '@/constant/admin'
 import { INIT_DATA_MY_BLOG } from '@/constant/app'
 import useCallbackToast from '@/hook/useCallbackToast'
-import { INewProduct } from '../../type'
+import { IImage, INewProduct } from '../../type'
 import ModelConfig from '../ModelConfig'
 import ImageConfig from '../ImageConfig'
 import Attributes from '../Attributes'
@@ -75,18 +71,15 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
   }
 
   const getImgDelete = (): string[] => {
-    // const list = []
-    // if (item?.images !== formData?.images) {
-    //   list.push(item?.images)
-    // }
-    // item?.images.forEach((e: string) => {
-    //   const isExited = formData?.images?.find((eForm: any) => eForm === e)
-    //   if (!isExited) {
-    //     list.push(e)
-    //   }
-    // })
-    // return list
-    return []
+    const list: string[] = []
+
+    item?.images.forEach((e) => {
+      const isExited = formData?.images?.find((eForm: IImage) => eForm.url === e.url)
+      if (!isExited) {
+        list.push(e.url)
+      }
+    })
+    return list
   }
 
   const handleSubmit = async () => {

@@ -4,6 +4,11 @@ export type ISizeModel = {
   amount: number
 }
 
+export type IImage = {
+  url: any
+  model: string
+}
+
 export type IModel = {
   model: string
   name: string
@@ -19,10 +24,7 @@ export type INewProduct = {
   dateSale: number
   nsx: string
   hsd: string
-  images: Array<{
-    url: any
-    model: string
-  }>
+  images: Array<IImage>
   des: string
   des2: string
   name: string
