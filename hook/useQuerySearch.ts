@@ -12,7 +12,7 @@ const useQuerySearch = () => {
 
   useEffect(() => {
     const searchPare = queryString.parse(window.location.search, { arrayFormat: 'comma' })
-    const searchPareClone = cloneData(searchPare)
+    const searchPareClone: any = cloneData(searchPare)
 
     Object.entries(searchPare).map(([key, value]) => {
       if (typeof value === 'string') {
@@ -37,7 +37,7 @@ const useQuerySearch = () => {
     value: string | string[] | number | number[],
     isReplace = true
   ) => {
-    let searchPareClone = cloneData(queries)
+    let searchPareClone: any = cloneData(queries)
     if (!searchPareClone) {
       searchPareClone = {}
     }
