@@ -112,7 +112,13 @@ const useSearchBaseAdmin = (
     }
 
     return () => setFormData(null)
-  }, [categoryMenu, lang, queries, isClient, defaultValue, form])
+  }, [categoryMenu, lang, queries, isClient, form])
+
+  useEffect(() => {
+    console.log('====================================')
+    console.log({ defaultValue })
+    console.log('====================================')
+  }, [defaultValue])
 
   const clearSearch = () => {
     const initData = {

@@ -66,7 +66,6 @@ const Avatar = () => {
     <div className='w-[150px] min-h-[150px] relative overflow-hidden rounded-[50%]'>
       <div className='absolute w-full h-full'>
         <MyImage
-          preview={false}
           src={detectAvatar(userData?.avatar?.toString())}
           alt='avatar'
           className='!relative !w-full !h-full'

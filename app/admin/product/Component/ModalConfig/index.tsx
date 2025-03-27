@@ -115,6 +115,7 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
         ...formData,
         des2: JSON.stringify(formData?.des2),
       }
+
       data = await AdminApi.createProduct(body)
     }
 
@@ -166,9 +167,11 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
           />
           <InputForm
             classFromItem='w-full'
-            name='titleSeo'
-            label={translate('admin.titleSeo')}
+            name='disCount'
+            label={translate('textPopular.disCount')}
             required
+            typeBtn='number'
+            validator={checkIsNumber}
           />
         </div>
 
@@ -197,29 +200,12 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
             validator={checkIsNumber}
           />
         </div>
-        <div className='flex gap-4 w-full'>
-          <InputForm
-            classFromItem='w-full'
-            name='disCount'
-            label={translate('textPopular.disCount')}
-            required
-            typeBtn='number'
-            validator={checkIsNumber}
-          />
 
-          <InputForm
-            classFromItem='w-full'
-            name='weight'
-            label={translate('productDetail.weight')}
-            required
-            disable={!!item}
-          />
-        </div>
         <ModelConfig
           data={formData?.models!}
           onChange={(e) => setFormData({ ...formData!, models: e })}
         />
-        <div className='w-full mt-3' />
+        <div className='w-full md:mt-4 mt-3' />
         <Attributes
           data={formData?.attributes}
           onChange={(e) => setFormData({ ...formData!, attributes: e })}
@@ -250,6 +236,14 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
 
         <ImageConfig data={formData!} onChange={(e) => setFormData({ ...formData!, images: e })} />
 
+        <div className='flex gap-4 md:mt-3 mt-2 w-full'>
+          <InputForm
+            classFromItem='w-full'
+            name='titleSeo'
+            label={translate('admin.titleSeo')}
+            required
+          />
+        </div>
         <InputForm
           classFromItem='w-full'
           name='desSeo'

@@ -1,5 +1,6 @@
 import MyInput from '@/components/MyInput'
 import useLanguage from '@/hook/useLanguage'
+import { cn } from '@/utils/tailwind'
 import { Form } from 'antd'
 import React from 'react'
 
@@ -40,7 +41,11 @@ const InputForm = ({
   const { translate } = useLanguage()
   return (
     <Form.Item
-      className={`form-item-input ${noPaddingBottom ? 'no-' : ''}padding-bottom  ${classFromItem}`}
+      className={cn(
+        'form-item-input',
+        classFromItem,
+        ` ${noPaddingBottom ? 'no-' : ''}padding-bottom`
+      )}
       label={label}
       name={name}
       rules={[

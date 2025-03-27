@@ -28,6 +28,12 @@ const zustandUserData = createStore<UserDataStore>()(
             const dataSecure = secureLocalStorage.getItem(ZUSTAND.UserData)
             if (dataSecure) {
               const dataDecode = decryptData(dataSecure.toString())
+              const userData: TYPE_ZUSTAND[ZUSTAND.UserData] = JSON.parse(dataDecode)
+              if (window.location.pathname !== '/') {
+              }
+              console.log('====================================')
+              console.log({ pathname: window.location.pathname })
+              console.log('====================================')
               return {
                 state: {
                   userData: JSON.parse(dataDecode),

@@ -1,3 +1,4 @@
+import { cn } from '@/utils/tailwind'
 import Image, { ImageProps } from 'next/image'
 import React, { useState } from 'react'
 import { useInView } from 'react-intersection-observer'
@@ -23,6 +24,7 @@ const MyImage = ({ ...props }: ImageProps) => {
         transition: 'filter 0.2s ease-out',
         ...props.style,
       }}
+      className={cn('!relative', props.className)}
       src={
         inView
           ? props.src

@@ -55,7 +55,7 @@ const SizeModelConfig = ({ value, onChangeValue, onDelete }: ISizeModelConfig) =
               />
             </div>
             <div className='flex flex-col gap-1'>
-              <div className='opacity-0'>{translate('textPopular.amount')}</div>
+              <div className='opacity-0'>i</div>
               <div className='text-red-500 text-xl'>
                 <DeleteOutlined onClick={() => handleDelete(index)} className='cursor-pointer' />
               </div>

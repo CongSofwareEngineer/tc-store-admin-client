@@ -13,9 +13,6 @@ const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, 'styles')],
   },
-  env: {
-    NEXT_PUBLIC_PROJECT_ID: '5a998e5a831f4de43423a0ee6314508b',
-  },
 
   images: {
     remotePatterns: [
@@ -55,7 +52,7 @@ if (process.env.NEXT_PUBLIC_ENV === 'production') {
   nextConfig.optimizeFonts = true
   nextConfig.cleanDistDir = true
   nextConfig.compiler = {
-    removeConsole: !!process.env.REMOVE_CONSOLE_LOG,
+    removeConsole: true,
     reactRemoveProperties: true,
     styledComponents: {
       displayName: true,

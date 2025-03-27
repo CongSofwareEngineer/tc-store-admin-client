@@ -20,6 +20,7 @@ import { QUERY_KEY } from '@/constant/reactQuery'
 import { showNotificationError, showNotificationSuccess } from '@/utils/notification'
 import AdminApi from '@/services/adminApi'
 import useFirstLoadPage from '@/hook/useFirstLoadPage'
+import { INewProduct } from './type'
 
 const ProductAdminScreen = () => {
   useFirstLoadPage()
@@ -165,12 +166,12 @@ const ProductAdminScreen = () => {
         },
       },
       {
-        title: 'imageMain',
-        key: 'imageMain',
-        dataIndex: 'imageMain',
+        title: 'images',
+        key: 'images',
+        dataIndex: 'images',
         fixed: 'left',
-        render: (src?: string) => (
-          <ImageAdmin src={src || ''} className='!w-[100px] !h-[100px] overflow-hidden' />
+        render: (src?: INewProduct['images']) => (
+          <ImageAdmin src={src?.[0]?.url || ''} className='!w-[100px] !h-[100px] overflow-hidden' />
         ),
       },
       {
