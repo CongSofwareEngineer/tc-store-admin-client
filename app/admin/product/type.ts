@@ -15,6 +15,11 @@ export type IModel = {
   sizes: Array<ISizeModel>
 }
 
+export type IAttribute = {
+  key: string
+  value: Array<string>
+}
+
 export type INewProduct = {
   _id?: string
   cost: number
@@ -36,9 +41,6 @@ export type INewProduct = {
   category: string
   titleSeo: string
   desSeo: string
-  attributes?: Array<{
-    key: string
-    value: string
-  }>
+  attributes?: Array<IAttribute>
   models: Array<IModel>
 }

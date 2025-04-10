@@ -57,12 +57,6 @@ const ProductConfig = ({ item, closeConfig }: { item: INewProduct; closeConfig: 
     setFormData(initData)
   }, [item])
 
-  useEffect(() => {
-    console.log('====================================')
-    console.log({ formData })
-    console.log('====================================')
-  }, [formData])
-
   const onChangeBlog = (value: any) => {
     setFormData((pre) => ({
       ...pre!,
