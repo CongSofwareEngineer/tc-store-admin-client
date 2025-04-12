@@ -1,10 +1,16 @@
 import MyTable, { ColumnsType } from '@/components/MyTable'
 import TextCopy from '@/components/TextCopy'
-import { FILTER_BILL, PAGE_SIZE_LIMIT } from '@/constant/app'
+import { DEFAULT_FEE_SHIP, FILTER_BILL, PAGE_SIZE_LIMIT } from '@/constant/app'
 import useBillAdmin from '@/hook/tank-query/Admin/useBillAdmin'
 import useModalDrawer from '@/hook/useModalDrawer'
 import useSearchBaseAdmin from '@/hook/useSearchBaseAdmin'
-import { ellipsisText, formatPrice, getColorStatus, numberWithCommas } from '@/utils/functions'
+import {
+  ellipsisText,
+  formatPrice,
+  getColorStatus,
+  getTotalBill,
+  numberWithCommas,
+} from '@/utils/functions'
 import React from 'react'
 import ItemDetail from './Components/Itemdetail'
 import ModalDelete from '@/components/ModalDelete'
@@ -20,6 +26,7 @@ import { DEFAULT_RATE_EXP_USER } from '../../../constant/app'
 import AdminApi from '@/services/adminApi'
 import useCallbackToast from '@/hook/useCallbackToast'
 import useFirstLoadPage from '@/hook/useFirstLoadPage'
+import { IBill } from '@/type'
 
 const BillAdminScreen = () => {
   useFirstLoadPage()
@@ -43,10 +50,10 @@ const BillAdminScreen = () => {
     }
   )
 
-  const getAmountBuy = (item: any) => {
+  const getAmountBuy = (item: IBill) => {
     let amount = 0
-    item.listBill.forEach((e: any) => {
-      amount += e.amount
+    item.listBill.forEach((e) => {
+      amount += e.amountBuy
     })
     return amount
   }
@@ -247,7 +254,7 @@ const BillAdminScreen = () => {
                 <div className='flex gap-2'>
                   <span className='font-bold'>{`${translate('textPopular.totalMoney')} :`}</span>
                   <span className='text-green-500 font-bold'>
-                    {formatPrice(record?.totalBill || '0')}
+                    {numberWithCommas(getTotalBill(record))}
                   </span>
                 </div>
 
@@ -290,8 +297,8 @@ const BillAdminScreen = () => {
         title: translate('bill.totalBill'),
         key: 'totalBill',
         dataIndex: 'totalBill',
-        render: (totalBill: any) => {
-          return <div className='text-green-500'>{numberWithCommas(totalBill)}</div>
+        render: (_: any, record: IBill) => {
+          return <div className='text-green-500'>{numberWithCommas(getTotalBill(record))}</div>
         },
       },
       {
