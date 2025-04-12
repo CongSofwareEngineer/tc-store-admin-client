@@ -21,6 +21,7 @@ import { showNotificationError, showNotificationSuccess } from '@/utils/notifica
 import AdminApi from '@/services/adminApi'
 import useFirstLoadPage from '@/hook/useFirstLoadPage'
 import { INewProduct } from './type'
+import { IImageProduct, IProduct } from '@/type'
 
 const ProductAdminScreen = () => {
   useFirstLoadPage()
@@ -59,12 +60,11 @@ const ProductAdminScreen = () => {
     // })
   }
 
-  const handleDelete = (item: any) => {
+  const handleDelete = (item: IProduct) => {
     const callback = async () => {
-      const imagesDelete = [item?.imageMain, ...item?.imageMore]
-      console.log({ imagesDelete })
+      const imagesDelete = item?.images?.map((img: IImageProduct) => img.url?.toString())
 
-      const res = await AdminApi.deleteProduct(item?._id, imagesDelete)
+      const res = await AdminApi.deleteProduct(item?._id!, imagesDelete)
       if (res.data) {
         await refreshQuery(QUERY_KEY.GetListProductAdmin)
         showNotificationSuccess(translate('success.delete'))
