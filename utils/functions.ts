@@ -1,7 +1,8 @@
 // import lodash from 'lodash'
 
 import { TYPE_PRODUCT } from '@/constant/admin'
-import { COLOR, FILTER_BILL } from '@/constant/app'
+import { COLOR, DEFAULT_FEE_SHIP, FILTER_BILL } from '@/constant/app'
+import { IBill } from '@/type'
 import BigNumber from 'bignumber.js'
 
 export const cloneData = <T>(data: T): T => {
@@ -267,4 +268,15 @@ export const getUrlProduct = (product: any) => {
   }
 
   return `/shop/${product?.more_data?.keyName || product?.keyName}`
+}
+
+export const getTotalBill = (record: IBill) => {
+  let totalBill = 0
+  record?.listBill?.forEach((e) => {
+    totalBill += e.amountBuy * e.price
+  })
+  totalBill += DEFAULT_FEE_SHIP
+  totalBill -= record?.discount
+
+  return totalBill
 }

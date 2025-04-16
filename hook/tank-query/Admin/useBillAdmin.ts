@@ -57,8 +57,6 @@ const useBillAdmin = (queries: Record<string, (string | null)[]> | null) => {
   })
 
   const dataFinal = useMemo(() => {
-    console.log({ data })
-
     if (!data) {
       return []
     }

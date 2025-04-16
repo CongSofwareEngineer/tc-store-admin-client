@@ -3,7 +3,7 @@ import { INewProduct } from '../../type'
 import { useModalAdmin } from '@/zustand/useModalAdmin'
 import { cloneData } from '@/utils/functions'
 import ModalDelete from '@/components/ModalDelete'
-import MyCollapse, { ItemCollapseProps } from '@/components/MyCollapse'
+import MyCollapse from '@/components/MyCollapse'
 import useLanguage from '@/hook/useLanguage'
 import MyInput from '@/components/MyInput'
 import { DeleteOutlined } from '@ant-design/icons'
@@ -36,7 +36,7 @@ const Attributes = ({ onChange, data }: IAttributes) => {
 
   const onChangeValue = (index: number, value: string) => {
     const dataClone = cloneData(data)!
-    dataClone[index].value = value
+    dataClone[index].value = value.split(',')
     onChange(dataClone)
   }
 
@@ -44,7 +44,7 @@ const Attributes = ({ onChange, data }: IAttributes) => {
     const dataClone = cloneData(data)!
     dataClone.push({
       key: 'new',
-      value: '',
+      value: [],
     })
     onChange(dataClone)
   }
@@ -69,7 +69,7 @@ const Attributes = ({ onChange, data }: IAttributes) => {
                 <div className='flex flex-col gap-1 md:min-w-[150px]'>
                   <div>value</div>
                   <MyInput
-                    value={e.value}
+                    value={e.value.join(',')}
                     onChangeText={(e) => onChangeValue(index, e.toString())}
                     className='!w-full'
                   />
