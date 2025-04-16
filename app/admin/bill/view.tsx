@@ -20,6 +20,8 @@ import { DEFAULT_RATE_EXP_USER } from '../../../constant/app'
 import AdminApi from '@/services/adminApi'
 import useCallbackToast from '@/hook/useCallbackToast'
 import useFirstLoadPage from '@/hook/useFirstLoadPage'
+import { IBodyBill, IProductInBill } from './type'
+import { IBillResponse } from '@/services/type'
 
 const BillAdminScreen = () => {
   useFirstLoadPage()
@@ -51,7 +53,15 @@ const BillAdminScreen = () => {
     return amount
   }
 
-  const handleSubmit = (item: any) => {
+  const getTotalBill = (listBill: IBillResponse['listBill']): number => {
+    let total = 0
+    listBill!.forEach((e) => {
+      total += e.price * e.amountBuy
+    })
+    return total
+  }
+
+  const handleSubmit = (item: IBillResponse) => {
     let title = translate('admin.bill.doYouWantChangeDelivering')
     let status = FILTER_BILL.Delivering
 
@@ -61,28 +71,28 @@ const BillAdminScreen = () => {
     }
 
     const callBackUpdate = async () => {
-      const body: any = {
+      const body: IBodyBill = {
         status,
         idUser: item.idUser,
-        exp: item.totalBill * DEFAULT_RATE_EXP_USER,
+      }
+      if (item?.idUser && item?.idUser !== 'no-user') {
+        body.exp = getTotalBill(item.listBill) * DEFAULT_RATE_EXP_USER
       }
 
       if (status === FILTER_BILL.DeliverySuccess) {
-        const listNewSoldProduct: any[] = []
-        item.listBill.forEach((e: any) => {
-          const item = {
-            sold: e.amount + e.more_data.sold,
-            idProduct: e._id,
-            configBill: e.configBill || {},
-            category: e.more_data.category,
+        body.listUpdate = []
+        item.listBill!.forEach((e) => {
+          const item: IProductInBill = {
+            idProduct: e.moreData._id!,
+            model: e.models.model,
+            size: e.models.size,
+            sold: e.amountBuy,
           }
-          listNewSoldProduct.push(item)
+          body.listUpdate!.push(item)
         })
-
-        body.listNewSoldProduct = listNewSoldProduct
       }
 
-      const res = await AdminApi.updateBill(item._id, body)
+      const res = await AdminApi.updateBill(item._id!, body)
 
       if (res?.data) {
         updateSuccess()
@@ -99,10 +109,9 @@ const BillAdminScreen = () => {
       const body: any = {
         status,
         idUser: item.idUser,
-        exp: item.totalBill * DEFAULT_RATE_EXP_USER,
       }
 
-      const res = await AdminApi.updateBill(item._id, body)
+      const res = await AdminApi.updateBill(item._id!, body)
 
       if (res?.data) {
         updateSuccess()

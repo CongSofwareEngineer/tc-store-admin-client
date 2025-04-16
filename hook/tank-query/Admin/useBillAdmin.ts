@@ -2,6 +2,7 @@ import { PAGE_SIZE_LIMIT } from '@/constant/app'
 import { QUERY_KEY, TypeHookReactQuery } from '@/constant/reactQuery'
 import useUserData from '@/hook/useUserData'
 import AdminApi from '@/services/adminApi'
+import { IBillResponse } from '@/services/type'
 import { isObject } from '@/utils/functions'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
@@ -12,7 +13,11 @@ const getData = async ({
 }: {
   queryKey: any
   pageParam: any
-}): Promise<TypeHookReactQuery> => {
+}): Promise<
+  {
+    data: IBillResponse[]
+  } & TypeHookReactQuery
+> => {
   try {
     const query = queryKey[1]
     let queryUrl = `?page=${pageParam}&limit=${PAGE_SIZE_LIMIT}`
@@ -25,7 +30,7 @@ const getData = async ({
     const dataServer = await AdminApi.getBills(queryUrl)
 
     return {
-      data: dataServer?.data || [],
+      data: dataServer,
       page: pageParam,
     }
   } catch {

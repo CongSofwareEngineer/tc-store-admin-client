@@ -1,5 +1,6 @@
 import { fetchData } from '@/configs/fetchConfig'
 import { REQUEST_TYPE } from '@/constant/app'
+import { IBillResponse } from './type'
 
 const AdminApi = {
   getUserDetailById: async (id: string) => {
@@ -17,10 +18,11 @@ const AdminApi = {
   },
 
   //bill
-  getBills: async (queryUrl: string) => {
-    return fetchData({
+  getBills: async (queryUrl: string): Promise<IBillResponse[]> => {
+    const res = await fetchData({
       url: `bill/all${queryUrl}`,
     })
+    return res?.data || []
   },
   updateBill: async (idBill: string, body: any) => {
     return fetchData({
