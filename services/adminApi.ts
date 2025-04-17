@@ -1,6 +1,6 @@
 import { fetchData } from '@/configs/fetchConfig'
 import { REQUEST_TYPE } from '@/constant/app'
-import { IBillResponse } from './type'
+import { IBillResponse, ICommentRes } from './type'
 
 const AdminApi = {
   getUserDetailById: async (id: string) => {
@@ -154,10 +154,11 @@ const AdminApi = {
   },
 
   //get comment
-  getComments: async (queryUrl: string) => {
-    return fetchData({
+  getComments: async (queryUrl: string): Promise<ICommentRes[]> => {
+    const data = await fetchData({
       url: `comment/all${queryUrl}`,
     })
+    return data?.data || []
   },
   // updateFanPage: async (id: TimeRanges, body: Object) => {
   //   const res = await fetchData({

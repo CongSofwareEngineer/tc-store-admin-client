@@ -2,52 +2,61 @@
 import FBRealtimeUtils from '@/utils/firebaseRealtime'
 import { NextPage } from 'next'
 import React, { useEffect, useState } from 'react'
-import { ContentItemChatProps, ItemChatProps } from './type'
+import { IChatRes, IContentChat, IInfoChat, IItemChat } from './type'
 import ItemChat from './Components/ItemChat'
 import useModalDrawer from '@/hook/useModalDrawer'
 import ItemReplyChat from './Components/ItemReplyChat'
 import useLanguage from '@/hook/useLanguage'
+import { cloneData } from '@/utils/functions'
 
 const ChatsAdminScreen: NextPage = () => {
-  const [listChat, setListChat] = useState<ItemChatProps[]>([])
+  const [listChat, setListChat] = useState<IItemChat[]>([])
   const [db] = useState(new FBRealtimeUtils('Chat'))
 
   const { openModalDrawer } = useModalDrawer()
   const { translate } = useLanguage()
 
   useEffect(() => {
-    db.listenerOnValue((data) => {
-      const arr: ItemChatProps[] = data.map((e) => {
-        const key = e.key
-        delete e.key
-        return { key, content: e }
+    const checkIsSeen = (content: IContentChat) => {
+      try {
+        console.log({ content })
+
+        // eslint-disable-next-line no-prototype-builtins
+        return Object.values(content).some((item: any) => item.hasOwnProperty('isSeen'))
+      } catch {
+        return false
+      }
+    }
+
+    db.listenerOnValue((data: IChatRes[]) => {
+      const arrChat = data.map((e) => {
+        const { key, date, ...res } = e
+        const content = res as IItemChat['content']
+        const itemTemp = {
+          key: key.toString(),
+          date: Number(date),
+          content,
+        }
+        return itemTemp
       })
 
-      const hasIsSeen = (content: any) => {
-        try {
-          console.log({ content })
-
-          // eslint-disable-next-line no-prototype-builtins
-          return Object.values(content).some((item: any) => item.hasOwnProperty('isSeen'))
-        } catch (error) {
-          return false
-        }
-      }
-      const sortedData = arr.sort((a, b) => {
-        const aHasIsSeen = hasIsSeen(a.content)
-        const bHasIsSeen = hasIsSeen(b.content)
+      arrChat.sort((a, b) => {
+        const aIsSeen = checkIsSeen(a.content)
+        const bIsSeen = checkIsSeen(b.content)
 
         // Đưa object không có `isSeen` lên đầu
-        if (!aHasIsSeen && bHasIsSeen) return -1
-        if (aHasIsSeen && !bHasIsSeen) return 1
-        return 0 // Giữ nguyên thứ tự nếu cả hai cùng có hoặc không có `isSeen`
+        if (!aIsSeen && bIsSeen) {
+          return -1
+        }
+        if (aIsSeen && !bIsSeen) {
+          return 1
+        }
+        return b.date - a.date
       })
 
-      console.log({ arr, sortedData })
+      console.log({ arrChat })
 
-      // arr=arr.sort((a,b)=>b.content.date-a.content.date)
-
-      setListChat(arr)
+      setListChat(arrChat)
     })
   }, [db])
 
@@ -55,10 +64,11 @@ const ChatsAdminScreen: NextPage = () => {
     console.log({ listChat })
   }, [listChat])
 
-  const handleClick = (key: string, item: ContentItemChatProps | null) => {
-    const listChatDetail = listChat.filter((e) => e.key === key)
+  const handleClick = (key: string, itemLast: IInfoChat) => {
+    const listChatDetail = listChat.find((e) => e.key === key)
+
     openModalDrawer({
-      content: <ItemReplyChat listChats={listChatDetail} item={item} keyChat={key} />,
+      content: <ItemReplyChat itemLast={itemLast} item={listChatDetail!} />,
       title: translate('common.reply'),
       useDrawer: true,
       configDrawer: {
@@ -73,6 +83,8 @@ const ChatsAdminScreen: NextPage = () => {
   return (
     <div className='w-full h-fit max-w-[1200px] lg:grid lg:grid-cols-2 lg:gap-5  flex flex-col gap-2 overflow-y-auto'>
       {listChat.map((e) => {
+        console.log({ item: e })
+
         return <ItemChat onClick={handleClick} data={e} key={e.key} />
       })}
     </div>

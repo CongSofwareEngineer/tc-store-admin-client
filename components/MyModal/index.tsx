@@ -15,6 +15,7 @@ const MyModalProvider = () => {
       closable={modal.showBtnClose}
       keyboard={modal?.overClickClose}
       maskClosable={modal?.overClickClose}
+      key={`model_${modal?.open}`}
     >
       <div className={`w-full h-full max-h-[90dvh]  overflow-y-auto ${modal?.classContent}`}>
         {modal?.content}

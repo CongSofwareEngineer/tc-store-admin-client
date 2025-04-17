@@ -8,11 +8,16 @@ import ImgCrop from 'antd-img-crop'
 import { isEqual } from 'lodash'
 import React from 'react'
 import { isIOS, isMacOs } from 'react-device-detect'
+
+export type IImgUpload = {
+  base64: string
+  name: string
+}
 type Props = {
   typeFile?: string
   children?: React.ReactNode
   disabled?: boolean
-  handleUpload: (file: any) => Promise<void> | void
+  handleUpload: (file: IImgUpload) => Promise<void> | void
   maxSizeOutputKB?: number
   listData?: any[]
   fullQuality?: boolean

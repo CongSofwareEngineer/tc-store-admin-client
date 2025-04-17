@@ -51,7 +51,7 @@ class FBRealtimeUtils {
     }
   }
 
-  listenerOnValue(callback: (value: any[]) => any) {
+  listenerOnValue<T>(callback: (value: T[]) => any) {
     onValue(this.db, async (snapshot) => {
       const data = snapshot.val()
 

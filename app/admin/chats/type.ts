@@ -1,12 +1,20 @@
-export type ContentItemChatProps = {
-  date: number
+export type IInfoChat = {
+  date?: number
   content: string
   isAdmin?: boolean
   isSeen?: boolean
-  attributes?: { [key: string]: any }
+  key?: string
+  [key: string]: unknown
 }
 
-export type ItemChatProps = {
+export type IContentChat = { [key: string | number]: IInfoChat }
+
+export type IItemChat = {
   key: string
-  content: ContentItemChatProps
+  content: IContentChat
+  date: number
+}
+
+export type IChatRes = {
+  [key: string]: IInfoChat | string | number
 }

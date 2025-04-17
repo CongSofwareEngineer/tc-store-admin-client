@@ -4,7 +4,7 @@ import MyTable, { ColumnsType } from '@/components/MyTable'
 import TextCopy from '@/components/TextCopy'
 import TextWithToggle from '@/components/TextWithToggle'
 import { TYPE_PRODUCT } from '@/constant/admin'
-import { PAGE_SIZE_LIMIT } from '@/constant/app'
+import { PAGE_SIZE_LIMIT, URL_CLIENT } from '@/constant/app'
 import useCommentAdmin from '@/hook/tank-query/Admin/useCommentAdmin'
 import useLanguage from '@/hook/useLanguage'
 import useMedia from '@/hook/useMedia'
@@ -26,6 +26,7 @@ import { QUERY_KEY } from '@/constant/reactQuery'
 import useRefreshQuery from '@/hook/tank-query/useRefreshQuery'
 import useCallbackToast from '@/hook/useCallbackToast'
 import useFirstLoadPage from '@/hook/useFirstLoadPage'
+import { ICommentRes } from '@/services/type'
 
 const CommentClient = () => {
   useFirstLoadPage()
@@ -48,11 +49,8 @@ const CommentClient = () => {
     }
   )
 
-  const getRouteProduct = (product: any) => {
-    if (product?.category === TYPE_PRODUCT.shoes) {
-      return `/shoes/${product.keyName}`
-    }
-    return `/shop/${product?.keyName}`
+  const getRouteProduct = (product: ICommentRes['product']) => {
+    return `${URL_CLIENT}/shop/${product?.keyName}`
   }
 
   const handleReply = (item: any) => {
@@ -63,7 +61,7 @@ const CommentClient = () => {
     })
   }
 
-  const handleDelete = (item: any) => {
+  const handleDelete = (item: ICommentRes) => {
     const callback = async () => {
       const bodyDelete = {
         imagesDelete: item.listImg || [],
@@ -127,7 +125,7 @@ const CommentClient = () => {
                 <div className='flex gap-2'>
                   <span className='font-bold'>{translate('textPopular.product')}:</span>
                   {record?.product ? (
-                    <Link href={getRouteProduct(record?.product)}>
+                    <Link target='_blank' href={getRouteProduct(record?.product)}>
                       {record?.product?.name || ''}
                     </Link>
                   ) : (
@@ -228,6 +226,7 @@ const CommentClient = () => {
           if (record?.product) {
             return (
               <Link
+                target='_blank'
                 className='hover:underline hover:!text-blue-600 min-w-[80px]'
                 href={getRouteProduct(record?.product)}
               >

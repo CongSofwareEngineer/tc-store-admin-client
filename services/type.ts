@@ -1,3 +1,5 @@
+import { IItemReply } from '@/app/admin/comment/type'
+
 export type ISizesModel = {
   size: number
   sold: number
@@ -81,4 +83,26 @@ export type IBillResponse = {
   status?: string
   infoBanking?: null
   listBill?: Array<IItemBill>
+}
+
+export type ICommentRes = {
+  _id: string
+  date: string
+  sdt: string
+  name: string
+  note: string
+  idProduct: string
+  listReply: Array<IItemReply>
+  userLikes: string[]
+  rate: number
+  listImg: string[]
+  user: {
+    avatar: string
+    sdt: string
+  }
+  product: {
+    name: string
+    keyName: string
+    category: string
+  }
 }

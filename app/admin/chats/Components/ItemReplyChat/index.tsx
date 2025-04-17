@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ContentItemChatProps, ItemChatProps } from '../../type'
+import { IContentChat, IInfoChat, IItemChat } from '../../type'
 import FBRealtimeUtils from '@/utils/firebaseRealtime'
 import ChatMessage from '@/components/ChatMessage'
 import ItemChatDetail from '../ItemChatDetail'
@@ -10,17 +10,23 @@ import useLanguage from '@/hook/useLanguage'
 import { showNotificationSuccess } from '@/utils/notification'
 
 type Props = {
-  keyChat: string
-  item: ContentItemChatProps | null
-  listChats: ItemChatProps[]
+  item: IItemChat
+  itemLast: IInfoChat
 }
-const ItemReplyChat = ({ item, keyChat, listChats }: Props) => {
+const ItemReplyChat = ({ item, itemLast }: Props) => {
   const { translate } = useLanguage()
   const { closeModalDrawer } = useModalDrawer()
 
-  const [db] = useState(new FBRealtimeUtils(`Chat/${keyChat}`))
+  const [db] = useState(new FBRealtimeUtils(`Chat/${item.key}`))
   const [loading, setLoading] = useState(false)
   const [text, setText] = useState('')
+
+  const arrChat = Object.entries(item.content || {}).map(([date, value]) => {
+    return {
+      date,
+      ...value,
+    }
+  })
 
   const handleSend = async () => {
     if (loading) {
@@ -28,37 +34,33 @@ const ItemReplyChat = ({ item, keyChat, listChats }: Props) => {
     }
     setLoading(true)
     const dataUpdate = {
-      [item?.date!]: {
-        ...item,
+      [itemLast?.key?.toString()!]: {
+        content: itemLast?.content,
         isSeen: true,
       },
-    }
-    const dataReply = {
+      [Date.now()]: {
+        content: text,
+        isAdmin: true,
+      },
       date: Date.now(),
-      content: text,
-      isAdmin: true,
     }
+
     await db.update(dataUpdate)
-    await db.update({ [dataReply.date]: dataReply })
-    setLoading(false)
     closeModalDrawer()
     showNotificationSuccess(translate('success.reply'))
     setText('')
+    setLoading(false)
   }
 
   const renderItem = () => {
-    const arrTemp = Object.values(listChats[0].content || {}).map((e) => {
-      const item: any = e
-      return item
-    })
-    return arrTemp.map((e) => {
-      return <ItemChatDetail data={e} key={e.date} />
+    return Object.entries(item.content || {}).map(([date, content]) => {
+      return <ItemChatDetail data={content} key={date} />
     })
   }
   return (
     <div className='flex flex-col h-full justify-between'>
       <div className=' relative flex flex-col flex-1 min-h-[70dvh] max-h-[70dvh] overflow-y-auto'>
-        <ChatMessage isLoadMore={false} isReverse loading={false} data={listChats}>
+        <ChatMessage isLoadMore={false} isReverse loading={false} data={arrChat}>
           {renderItem()}
         </ChatMessage>
       </div>

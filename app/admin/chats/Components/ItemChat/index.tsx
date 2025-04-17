@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ContentItemChatProps, ItemChatProps } from '../../type'
+import { IContentChat, IInfoChat, IItemChat } from '../../type'
 import { formatDateTime } from '@/utils/momentFunc'
 import { ellipsisText } from '@/utils/functions'
 import MyImage from '@/components/MyImage'
@@ -7,30 +7,35 @@ import { images } from '@/configs/images'
 import TextCopy from '@/components/TextCopy'
 
 type Props = {
-  data: ItemChatProps
-  onClick: (key: string, data: ContentItemChatProps | null) => void
+  data: IItemChat
+  onClick: (key: string, data: IInfoChat) => void
 }
+
 const ItemChat = ({ data, onClick }: Props) => {
-  const [newChat, setNewChat] = useState<ContentItemChatProps | null>(null)
+  const [newChat, setNewChat] = useState<IInfoChat>()
 
   useEffect(() => {
     if (data.content) {
-      let newChat: ContentItemChatProps | null = null
-      Object.values(data.content).forEach((e: any) => {
-        if (!newChat) {
-          newChat = e
+      let newChat: IInfoChat
+      let dateMax = ''
+      Object.entries(data.content).forEach(([key, value]) => {
+        if (!dateMax) {
+          dateMax = key
         }
-        if (!e.isAdmin && newChat?.date! < e.date) {
-          newChat = e
+        if (!value.isAdmin && Number(dateMax) < Number(key)) {
+          newChat = {
+            ...value,
+            key,
+          }
         }
       })
-      setNewChat(newChat)
+      setNewChat(newChat!)
     }
   }, [data])
 
   return (
     <div
-      onClick={() => onClick(data.key, newChat)}
+      onClick={() => onClick(data.key, newChat!)}
       className='flex cursor-pointer h-fit flex-col gap-2 w-full lg:border-[1px] lg:border-gray-300 border-b-[1px] lg:p-3 lg:bg-white lg:rounded-xl border-b-gray-300 pb-2'
     >
       <div className='flex w-full gap-2'>

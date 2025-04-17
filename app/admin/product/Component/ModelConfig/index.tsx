@@ -78,6 +78,10 @@ const ModelConfig = ({ data, onChange }: IAttributeAdminProps) => {
     const callback = () => {
       let dataClone: IModel[] = cloneData(data)
       dataClone = dataClone.filter((_, indexFilter) => indexFilter !== index)
+      dataClone.forEach((_, index) => {
+        dataClone[index].model = `model_${index + 1}`
+      })
+
       onChange(dataClone)
     }
     openModal({
